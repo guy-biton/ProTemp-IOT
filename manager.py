@@ -3,6 +3,7 @@
 
 import paho.mqtt.client as mqtt
 import random
+import time
 from init import *
 import data_acq as da
 from icecream import ic
@@ -35,7 +36,6 @@ def on_message(client, userdata, msg):
 
 def send_msg(client, topic, message):
     ic("Sending message: " + message)
-    #tnow=time.localtime(time.time())
     client.publish(topic,message)
 
 def client_init(cname):
@@ -76,7 +76,13 @@ def insert_DB(topic, m_decode):
 def parse_data(m_decode):
     value = 'NA'
     # 'From: ' + self.name+ ' Temperature: '+str(temp)+' Humidity: '+str(hum)
-    value = m_decode.split(' Temperature: ')[1].split(' Humidity: ')[0]
+    try:
+        if ' Humidity: ' in m_decode:
+            value = m_decode.split(' Temperature: ')[1].split(' Humidity: ')[0]
+        else:
+            value = m_decode.split(' Temperature: ')[1]
+    except:
+        value = 'NA'
     return value
 
 def enable(client, topic, msg):
@@ -133,12 +139,9 @@ def check_DB_for_change(client):
 
 
 def check_Data(client):
-    #ic('we are here')
     try:
         rrows = da.check_changes('iot_devices')
-        #ic(rrows)
         for row in rrows:
-            #ic(row)
             topic = row[17]
             if row[10]=='Backup_Cooler':
                 msg = 'Set temperature to: ' + str(row[15])

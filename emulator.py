@@ -85,7 +85,7 @@ class ConnectionDock(QDockWidget):
         self.eConnectbtn.clicked.connect(self.on_button_connect_click)
         self.eConnectbtn.setStyleSheet("background-color: gray")
         formLayot=QFormLayout()
-        if 'DHT' in self.name or 'Warehouse_Ambient' in self.name:
+        if 'DHT' in self.name or 'Warehouse_Ambient' in self.name or 'Vaccine_Unit' in self.name or 'Food_Unit' in self.name:
             self.ePublisherTopic=QLineEdit()
             self.ePublisherTopic.setText(self.topic_pub)
             self.Temperature=QLineEdit()
@@ -95,7 +95,20 @@ class ConnectionDock(QDockWidget):
             formLayot.addRow("Turn On/Off",self.eConnectbtn)
             formLayot.addRow("Pub topic",self.ePublisherTopic)
             formLayot.addRow("Temperature",self.Temperature)
-            formLayot.addRow("Humidity",self.Humidity)
+
+            # Only show Humidity for Ambient
+            if 'Warehouse_Ambient' in self.name:
+                formLayot.addRow("Humidity",self.Humidity)
+
+            # Manual Control for Demo - ONLY for Vaccine Unit
+            if 'Vaccine_Unit' in self.name:
+                self.eBaseTemp = QLineEdit()
+                self.eBaseTemp.setPlaceholderText("Change Base Temp")
+                self.eUpdateBtn = QPushButton("Update Base Temp")
+                self.eUpdateBtn.clicked.connect(self.update_base_temp)
+                formLayot.addRow("Base Temp", self.eBaseTemp)
+                formLayot.addRow("", self.eUpdateBtn)
+
         elif 'Air' in self.name or 'Backup_Cooler' in self.name:
             self.eSubscribeTopic=QLineEdit()
             self.eSubscribeTopic.setText(self.topic_sub)
@@ -136,6 +149,16 @@ class ConnectionDock(QDockWidget):
         self.setTitleBarWidget(widget)
         self.setWidget(widget)
         self.setWindowTitle("ProTemp IOT Emulator")
+
+    def update_base_temp(self):
+        global tmp_upd
+        try:
+            val = float(self.eBaseTemp.text())
+            tmp_upd = val
+            ic(f"Manual update of base temp to {val}")
+        except ValueError:
+            ic("Invalid temperature value entered")
+
     def on_connected(self):
         self.eConnectbtn.setStyleSheet("background-color: green")
     def on_button_connect_click(self):
@@ -160,8 +183,7 @@ class ConnectionDock(QDockWidget):
                 ic("fail in parsing temperature !!!!!!!!!!!!!!!!")
             tmp_upd=tmp
 
-        # elif 'OFF' in messg:
-        #     self.ePushtbtn.setStyleSheet("background-color: gray")
+
 
 class MainWindow(QMainWindow):
     def __init__(self, args, parent=None):
@@ -227,6 +249,8 @@ class MainWindow(QMainWindow):
 
     def create_data_EW(self):
         ic('Power data update')
+        hour_delta_el = (670/17)/24
+        elec= format(hour_delta_el+random.randrange(-100,100)/300, '.2f')
         current_data= 'From: ' + self.name + ' Electricity: '+str(elec)
         self.connectionDock.Temperature.setText(str(elec))
         if not self.mc.connected:
@@ -248,7 +272,7 @@ class MainWindow(QMainWindow):
         if not self.mc.subscribed:
             self.mc.subscribe_to(self.topic_sub)
         temp=tmp_upd+random.randrange(-10,-5)/10
-        current_data=  'Temperature: '+str(temp)
+        current_data= 'From: ' + self.name + ' Temperature: '+str(temp)
         self.connectionDock.Temperature.setText(str(temp))
         self.mc.publish_to(self.topic_pub,current_data)
 
@@ -260,7 +284,7 @@ class MainWindow(QMainWindow):
         if not self.mc.subscribed:
             self.mc.subscribe_to(self.topic_sub)
         temp=tmp_upd+random.randrange(-10,-5)/10
-        current_data=  'Temperature: '+str(temp)
+        current_data= 'From: ' + self.name + ' Temperature: '+str(temp)
         self.connectionDock.Temperature.setText(str(temp))
         self.mc.publish_to(self.topic_pub,current_data)
 
