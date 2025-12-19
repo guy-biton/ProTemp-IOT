@@ -114,6 +114,9 @@ def check_DB_for_change(client):
             msg = f'WARNING: FREEZER MALFUNCTION! Vaccine Temp: {last_val}'
             ic(msg)
             client.publish(comm_topic+'alarm', msg)
+        else:
+            # Normal Range - Turn OFF Backup Cooler
+            client.publish(comm_topic+'Warehouse_Backup/sub', 'Set temperature to: OFF')
 
     # Food Safety Check
     df = da.fetch_data(db_name, 'data', 'Food_Unit')
