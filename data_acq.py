@@ -9,7 +9,6 @@ from sqlite3 import Error
 from datetime import datetime
 import time as tm
 from icecream import ic as ic2
-# import matplotlib.pyplot as plt # Removed
 import random
 
 
@@ -238,20 +237,7 @@ def fetch_data(database,table_name, filter):
     with conn:
         return fetch_table_data_into_df(TABLE_NAME, conn,filter)
 
-# def show_graph(meter, date): # Removed
-#     df = fetch_data(db_name,'data', meter)
-#     #df.timestamp=pd.to_numeric(df.timestamp)
-#     df.value=pd.to_numeric(df.value)
-#     ic2(len(df.value))
-#     ic2(df.value[len(df.value)-1])
-#     ic2(max(df.value))
-#     ic2(df.timestamp)
-#     df.plot(x='timestamp',y='value')
-#     # fig, axes = plt.subplots (2,1)
-#     # # Draw a horizontal bar graph and a vertical bar graph
-#     # df.plot.bar (ax = axes [0])
-#     # df.plot.barh (ax = axes [1])
-#     plt.show()
+
 
 
 if __name__ == '__main__':
@@ -286,64 +272,4 @@ if __name__ == '__main__':
                 add_IOT_data('ElecMeter', '2021-05-'+ str(d+1) + ' ' + str(h) + ':30:11', current_el)
 
 
-    rez= filter_by_date('data','2021-05-16','2021-05-18', 'ElecMeter')
-    print(rez)
-    # df = fetch_data(db_name,'data', 'WaterMeter')
-    # ic2(df.head())
 
-    temperature = []
-    timenow = []
-
-    for row in rez:
-        timenow.append(row[1])
-        temperature.append("{:.2f}".format(float(row[2])))
-
-    # plt.plot_date(timenow,temperature,'-')
-    # plt.show()
-
-    # #df.timestamp=pd.to_numeric(df.timestamp)
-    # df.value=pd.to_numeric(df.value)
-    # ic2(len(df.value))
-    # ic2(df.value[len(df.value)-1])
-    # ic2(max(df.value))
-    # #ic2(df.timestamp)
-
-    # df.plot(x='timestamp',y='value')
-
-
-    # # fig, axes = plt.subplots (2,1)
-    # # # Draw a horizontal bar graph and a vertical bar graph
-    # # df.plot.bar (ax = axes [0])
-    # # df.plot.barh (ax = axes [1])
-    # plt.show()
-
-        #df.plot('name','value')
-        # to plot per measuremnt
-        # for measurement in df.MEASUREMENT.unique():
-        #     df[df.MEASUREMENT == measurement].plot("READ_TIME", "VALUE")
-            #pylab.savefig(f"{measurement}.png")
-            #pylab.clf()
-
-    # while False:
-    #     update_IOT_dev(('20','airconditioner'))
-    #     tm.sleep(30)
-    #     update_IOT_dev(('22','airconditioner'))
-    #     tm.sleep(30)
-    # #numb =add_IOT_data('DTH-1', timestamp(), 27)
-    #ic2(numb)
-
-    #rows = read_IOT_data('data', 1)
-    #for row in rows:
-    #ic2(rows[-1][2])
-    #update_IOT_dev(('538','DHT-1'))
-    # rrows = check_changes('iot_devices')
-    # for row in rrows:
-    #     ic2(row)
-
-
-
-
-# if __name__ == "__main__":
-#     data = acq_data()
-#     # Preview the first 5 lines of the loaded data
-#     ic2(data.head())

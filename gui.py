@@ -15,7 +15,7 @@ from icecream import ic
 from datetime import datetime
 import data_acq as da
 import winsound
-# import pyqtgraph as pg # Removed for Industrial GUI
+import winsound
 
 import logging
 
@@ -34,11 +34,7 @@ file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
 # Logs
-# logger.debug('A debug message')
-# logger.info('An info message')
-# logger.warning('Something is not right.')
-# logger.error('A Major error has happened.')
-# logger.critical('Fatal error. Cannot continue')
+# Logs
 
 def play_alarm_sound():
     try:
@@ -89,11 +85,22 @@ class MC(Mqtt_client):
                 if 'ALARM' in m_decode or 'WARNING' in m_decode:
                     play_alarm_sound()
             if 'Warehouse_Zone_A' in topic:
-                mainwin.statusDock.vaccineTemp.setText(check(m_decode.split('Temperature: ')[1]))
+                temp_val = check(m_decode.split('Temperature: ')[1])
+                mainwin.statusDock.vaccineTemp.setText(temp_val)
+
+
+                try:
+                    if float(temp_val) > -15: # Thaw Risk
+                        mainwin.statusDock.vaccineTemp.setStyleSheet("color: red; font-weight: bold; font-size: 14px; background-color: #ffcccc;")
+                    else:
+                        mainwin.statusDock.vaccineTemp.setStyleSheet("color: blue; font-weight: bold; font-size: 14px;")
+                except:
+                    pass
+
             if 'Warehouse_Zone_B' in topic:
                 mainwin.statusDock.foodTemp.setText(check(m_decode.split('Temperature: ')[1]))
             if 'Warehouse_Main' in topic:
-                # From: Warehouse_Ambient Temperature: 24 Humidity: 91
+
                 try:
                     temp = check(m_decode.split('Temperature: ')[1].split(' Humidity: ')[0])
                     hum = check(m_decode.split(' Humidity: ')[1])
@@ -278,10 +285,6 @@ class MainWindow(QMainWindow):
         # Init QDockWidget objects
         self.connectionDock = ConnectionDock(self.mc)
         self.statusDock = StatusDock(self.mc)
-        # self.tempDock = TempDock(self.mc) # Removed
-        # self.graphsDock = GraphsDock(self.mc) # Removed
-        # self.airconditionDock= AirconditionDock(self.mc) # Removed
-        # self.plotsDock = PlotDock() # Removed
         self.addDockWidget(Qt.TopDockWidgetArea, self.connectionDock)
         self.addDockWidget(Qt.BottomDockWidgetArea, self.statusDock)
 

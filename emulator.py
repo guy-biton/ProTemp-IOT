@@ -118,7 +118,7 @@ class ConnectionDock(QDockWidget):
             formLayot.addRow("Turn On/Off",self.eConnectbtn)
             formLayot.addRow("Pub topic",self.ePublisherTopic)
             formLayot.addRow("Electricity",self.Temperature)
-            # formLayot.addRow("Water",self.Humidity) # Removed Water for Industrial context
+            formLayot.addRow("Electricity",self.Temperature)
         else:
             self.eSubscribeTopic=QLineEdit()
             self.eSubscribeTopic.setText(self.topic_sub)
@@ -227,13 +227,8 @@ class MainWindow(QMainWindow):
 
     def create_data_EW(self):
         ic('Power data update')
-        # hour_delta_w = 0.42/24
-        hour_delta_el = (670/17)/24
-        elec= format(hour_delta_el+random.randrange(-100,100)/300, '.2f')
-        # water=format(hour_delta_w +random.randrange(-10,10)/1000, '.3f')
-        current_data= 'From: ' + self.name + ' Electricity: '+str(elec) # +' Water: '+str(water)
+        current_data= 'From: ' + self.name + ' Electricity: '+str(elec)
         self.connectionDock.Temperature.setText(str(elec))
-        # self.connectionDock.Humidity.setText(str(water))
         if not self.mc.connected:
             self.connectionDock.on_button_connect_click()
         self.mc.publish_to(self.topic_pub,current_data)
@@ -269,17 +264,7 @@ class MainWindow(QMainWindow):
         self.connectionDock.Temperature.setText(str(temp))
         self.mc.publish_to(self.topic_pub,current_data)
 
-    def create_data_Bo(self):
-        global tmp_upd
-        ic('Boiler data update')
-        if not self.mc.connected:
-            self.connectionDock.on_button_connect_click()
-        if not self.mc.subscribed:
-            self.mc.subscribe_to(self.topic_sub)
-        temp=tmp_upd+random.randrange(1,20)/2
-        current_data=  'Temperature: '+str(temp)
-        self.connectionDock.Temperature.setText(str(temp))
-        self.mc.publish_to(self.topic_pub,current_data)
+
 
 if __name__ == '__main__':
 

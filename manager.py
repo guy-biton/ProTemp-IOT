@@ -2,11 +2,6 @@
 # insert data to Smart home DB
 
 import paho.mqtt.client as mqtt
-# import os
-import time
-# import sys, getopt
-# import logging
-# import queue
 import random
 from init import *
 import data_acq as da
@@ -77,7 +72,6 @@ def insert_DB(topic, m_decode):
     # Power Meter case:
     elif 'Power' in m_decode:
         da.add_IOT_data('Main_Power', da.timestamp(), m_decode.split(' Electricity: ')[1])
-        # da.add_IOT_data('WaterMeter', da.timestamp(), m_decode.split(' Water: ')[1]) # Removed Water
 
 def parse_data(m_decode):
     value = 'NA'
